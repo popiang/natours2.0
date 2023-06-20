@@ -1,28 +1,36 @@
 const bodyParser = require("body-parser");
-const express = require("express");
 const fs = require("fs");
+const morgan = require("morgan");
+
+const express = require("express");
 
 const app = express();
 
+/* middleware */
+
+// http request logger middleware for node.js
+app.use(morgan("dev"));
+
+// to modify the incoming req data and add into req object
 app.use(bodyParser.json());
 
 // custom middleware
 app.use((req, res, next) => {
-	console.log("Hello from the middleware!!");
-	next();
+    console.log("Hello from the middleware!!");
+    next();
 });
 
 app.use((req, res, next) => {
-	req.requestTime = new Date().toISOString();
-	next();
-})
+    req.requestTime = new Date().toISOString();
+    next();
+});
 
 const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/dev-data/data/tours-sample.json`)
 );
 
 const getAllTours = (req, res) => {
-	console.log(req.requestTime);
+    console.log(req.requestTime);
     res.status(200).json({
         status: "success",
         results: tours.length,
