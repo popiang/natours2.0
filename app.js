@@ -25,9 +25,13 @@ app.use((req, res, next) => {
     next();
 });
 
+// get all the tours from file
 const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/dev-data/data/tours-sample.json`)
 );
+
+
+/* routes handlers */
 
 const getAllTours = (req, res) => {
     console.log(req.requestTime);
@@ -115,8 +119,51 @@ const deleteTour = (req, res) => {
     });
 };
 
+const getAllUsers = (req, res) => {
+    res.status(500).json({
+        status: "error",
+        message: "This path is not defined yet",
+    });
+};
+
+const getUser = (req, res) => {
+    res.status(500).json({
+        status: "error",
+        message: "This path is not defined yet",
+    });
+};
+
+const createUser = (req, res) => {
+    res.status(500).json({
+        status: "error",
+        message: "This path is not defined yet",
+    });
+};
+
+const editUser = (req, res) => {
+	res.status(500).json({
+        status: "error",
+        message: "This path is not defined yet",
+    });	
+}
+
+const deleteUser = (req, res) => {
+	res.status(500).json({
+        status: "error",
+        message: "This path is not defined yet",
+    });	
+}
+
+/* routes */
+
 app.route("/api/v1/tours").get(getAllTours).post(createTour);
 app.route("/api/v1/tours/:id").get(getTour).patch(editTour).delete(deleteTour);
+
+app.route("/api/v1/users").get(getAllUsers).post(createUser);
+app.route("/api/v1/users/:id").get(getUser).patch(editUser).delete(deleteUser);
+
+
+/* start the server */
 
 const port = 3000;
 app.listen(port, () => {
