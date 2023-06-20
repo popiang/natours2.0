@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/popiang/natours2.0#readme",
   "dependencies": {
+    "body-parser": "^1.20.2",
     "express": "4.0"
   }
 }
