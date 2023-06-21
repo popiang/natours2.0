@@ -1,5 +1,5 @@
-const Tour = require("../models/tourModel");
 
+const Tour = require("../models/tourModel");
 exports.checkBody = (req, res, next) => {
 	if (!req.body.name || !req.body.price) {
 		return res.status(400).json({
@@ -67,13 +67,25 @@ exports.createTour = async (req, res) => {
 	}
 };
 
-exports.editTour = (req, res) => {
-    res.status(200).json({
-        status: "success",
-        data: {
-            tour: "<updated tour here>",
-        },
-    });
+exports.editTour = async (req, res) => {
+	try {
+		const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+			new: true,
+			runValidators: true
+		});
+
+		res.status(200).json({
+			status: "success",
+			data: {
+				tour: tour
+			}
+		})
+	} catch (error) {
+		res.status(400).json({
+			status: "fail",
+			message: error
+		})
+	}
 };
 
 exports.deleteTour = (req, res) => {
