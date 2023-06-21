@@ -15,39 +15,19 @@ console.log(DB);
 // create connection
 mongoose.connect(DB, {}).then(() => console.log("DB connection successfull!!"));
 
-// create tour schema
-const tourSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, "A tour must have a name"],
-        unique: true,
-    },
-    rating: {
-        type: Number,
-        default: 4.5,
-    },
-    price: {
-        type: Number,
-        required: [true, "A tour must have a price"],
-    },
-});
+// const newTour = new Tour({
+//     name: "The Park Camper",
+//     price: 997,
+// });
 
-// use the schema to create model
-const Tour = mongoose.model("Tour", tourSchema);
-
-const newTour = new Tour({
-    name: "The Park Camper",
-    price: 997,
-});
-
-newTour
-    .save()
-    .then((doc) => {
-        console.log(doc);
-    })
-    .catch((err) => {
-        console.log("Error!!!");
-    });
+// newTour
+//     .save()
+//     .then((doc) => {
+//         console.log(doc);
+//     })
+//     .catch((err) => {
+//         console.log("Error!!!");
+//     });
 
 
 const port = process.env.PORT;
