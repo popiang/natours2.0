@@ -15,6 +15,8 @@ app.use(morgan("dev"));
 // to modify the incoming req data and add into req object
 app.use(bodyParser.json());
 
+app.use(express.static(`${__dirname}/public`));
+
 // custom middleware
 app.use((req, res, next) => {
     console.log("Hello from the middleware!!");
