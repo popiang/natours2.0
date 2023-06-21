@@ -10,7 +10,9 @@ const app = express();
 /* middleware */
 
 // http request logger middleware for node.js
-app.use(morgan("dev"));
+if (process.env.NODE_ENV === 'development') {
+	app.use(morgan("dev"));
+}
 
 // to modify the incoming req data and add into req object
 app.use(bodyParser.json());
