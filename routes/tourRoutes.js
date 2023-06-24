@@ -10,8 +10,12 @@ router
     .get(tourController.top5Cheaps, tourController.getAllTours);
 
 router
-	.route("/stats")
+	.route("/tour-stats")
 	.get(tourController.getTourStats);
+
+router
+	.route("/monthly-plan/:year")
+	.get(tourController.getMonthlyPlan);
 
 router
     .route("/")
