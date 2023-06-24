@@ -11,6 +11,14 @@ exports.checkBody = (req, res, next) => {
 	next();
 }
 
+exports.top5Cheaps = (req, res, next) => {
+	req.query.limit = '5';
+	req.query.sort = '-ratingsAverage,price';
+	req.query.fields = 'name,price,ratingsAverage,summry,difficulty';
+
+	next();
+}
+
 exports.getAllTours = async (req, res) => {
 	try {
 		const queryObj = {...req.query};
@@ -43,6 +51,10 @@ exports.getAllTours = async (req, res) => {
 			query = query.select(fields);
 		} else {
 			query = query.select('-__v');
+		}
+
+		if (req.query.limit) {
+			query = query.limit(req.query.limit);
 		}
 		
 		//* execute query

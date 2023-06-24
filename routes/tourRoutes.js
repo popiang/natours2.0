@@ -6,6 +6,10 @@ const router = express.Router();
 // router.param("id", tourController.checkID);
 
 router
+    .route("/top5cheap")
+    .get(tourController.top5Cheaps, tourController.getAllTours);
+
+router
     .route("/")
     .get(tourController.getAllTours)
     .post(tourController.checkBody, tourController.createTour);
