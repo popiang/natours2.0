@@ -1,4 +1,6 @@
 const Tour = require("../models/tourModel");
+const APIFeatures = require("../utils/apiFeatures");
+
 exports.checkBody = (req, res, next) => {
     if (!req.body.name || !req.body.price) {
         return res.status(400).json({
@@ -20,44 +22,50 @@ exports.top5Cheaps = (req, res, next) => {
 
 exports.getAllTours = async (req, res) => {
     try {
-        const queryObj = { ...req.query };
+        // const queryObj = { ...req.query };
 
-        //* filtering
-        const excludeFields = ["page", "sort", "limit", "fields"];
-        excludeFields.forEach((el) => delete queryObj[el]);
+        // //* filtering
+        // const excludeFields = ["page", "sort", "limit", "fields"];
+        // excludeFields.forEach((el) => delete queryObj[el]);
 
-        //* advance filtering
-        let queryStr = JSON.stringify(queryObj);
-        queryStr = queryStr.replace(
-            /\b(gt|gte|lt|lte)\b/g,
-            (match) => `$${match}`
-        );
+        // //* advance filtering
+        // let queryStr = JSON.stringify(queryObj);
+        // queryStr = queryStr.replace(
+        //     /\b(gt|gte|lt|lte)\b/g,
+        //     (match) => `$${match}`
+        // );
 
-        let query = Tour.find(JSON.parse(queryStr));
+        // let query = Tour.find(JSON.parse(queryStr));
 
-        //* sorting
-        if (req.query.sort) {
-            const sortBy = req.query.sort.split(",").join(" ");
-            query = query.sort(sortBy);
-        } else {
-            query = query.sort("-createdAt");
-        }
+        // //* sorting
+        // if (req.query.sort) {
+        //     const sortBy = req.query.sort.split(",").join(" ");
+        //     query = query.sort(sortBy);
+        // } else {
+        //     query = query.sort("-createdAt");
+        // }
 
-        //* limit fields
-        if (req.query.fields) {
-            const fields = req.query.fields.split(",").join(" ");
-            console.log(fields);
-            query = query.select(fields);
-        } else {
-            query = query.select("-__v");
-        }
+        // //* limit fields
+        // if (req.query.fields) {
+        //     const fields = req.query.fields.split(",").join(" ");
+        //     console.log(fields);
+        //     query = query.select(fields);
+        // } else {
+        //     query = query.select("-__v");
+        // }
 
-        if (req.query.limit) {
-            query = query.limit(req.query.limit);
-        }
+        // if (req.query.limit) {
+        //     query = query.limit(req.query.limit);
+        // }
+
+        const features = new APIFeatures(Tour.find(), req.query)
+            .filter()
+            .sort()
+            .limitFields()
+            .paginate();
 
         //* execute query
-        const tours = await query;
+        const tours = await features.query;
 
         res.status(200).json({
             status: "success",
