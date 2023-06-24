@@ -8,7 +8,7 @@ dotenv.config({ path: "./config.env" });
 const DB = process.env.DATABASE.replace(
     "<PASSWORD>",
     process.env.DATABASE_PASSWORD
-);
+).replace("<DATABASE_NAME>", process.env.DATABASE_NAME);
 
 console.log(DB);
 
