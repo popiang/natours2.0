@@ -60,6 +60,16 @@ tourSchema.virtual("durationWeeks").get(function () {
     return this.duration / 7;
 });
 
+// tourSchema.pre('save', function(next) {
+// 	console.log('Will save the document..');
+// 	next();
+// });
+
+// tourSchema.post('save', function(doc, next) {
+// 	console.log(doc);
+// 	next();
+// });
+
 // use the schema to create model
 const Tour = mongoose.model("Tour", tourSchema);
 
