@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const app = require("./app");
 
+process.on('uncaughtException', err => {
+	console.log("UNCAUGHT EXCEPTION!! Shutting down..");
+	console.log(err.name);
+	console.log(err.message);
+	process.exit(1);
+});
+
 //* to read the variables in the config file and save it in the node js environment variables
 dotenv.config({ path: "./config.env" });
 
