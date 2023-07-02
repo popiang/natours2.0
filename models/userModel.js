@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate: [validator.isEmail, "Please provide a valid email"],
     },
+    role: {
+        type: String,
+        enum: ["admin", "guide-lead", "guide", "user"],
+        default: "user",
+    },
     photo: {
         type: String,
         trim: true,
@@ -27,7 +32,7 @@ const userSchema = new mongoose.Schema({
         required: [true, "A password is compulsory"],
         trim: true,
         minlength: [8, "Password length must be at least 8 characters"],
-		select: false
+        select: false,
     },
     confirmPassword: {
         type: String,
@@ -41,7 +46,7 @@ const userSchema = new mongoose.Schema({
             message: `Passwords don't match`,
         },
     },
-	passwordChangeAt: Date
+    passwordChangeAt: Date,
 });
 
 //* document middleware
@@ -53,18 +58,24 @@ userSchema.pre("save", async function (next) {
     next();
 });
 
-userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
-	return await bcrypt.compare(candidatePassword, userPassword);
-}
+userSchema.methods.correctPassword = async function (
+    candidatePassword,
+    userPassword
+) {
+    return await bcrypt.compare(candidatePassword, userPassword);
+};
 
-userSchema.methods.changePasswordAfter = function(JWTTimestamp) {
-	if (this.passwordChangeAt) {
-		const changedTimestamp = parseInt(this.passwordChangeAt.getTime() / 1000, 10);
-		return JWTTimestamp < changedTimestamp;
-	} else {
-		return false;
-	}
-}
+userSchema.methods.changePasswordAfter = function (JWTTimestamp) {
+    if (this.passwordChangeAt) {
+        const changedTimestamp = parseInt(
+            this.passwordChangeAt.getTime() / 1000,
+            10
+        );
+        return JWTTimestamp < changedTimestamp;
+    } else {
+        return false;
+    }
+};
 
 const User = mongoose.model("User", userSchema);
 

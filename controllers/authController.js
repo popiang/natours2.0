@@ -10,9 +10,9 @@ const signToken = (id) => {
     });
 };
 
+//* to protect route by checking token and user
 exports.protect = catchAsync(async (req, res, next) => {
-
-	//* 1) get the token
+    //* 1) get the token
     let token = "";
     if (
         req.headers.authorization &&
@@ -21,7 +21,7 @@ exports.protect = catchAsync(async (req, res, next) => {
         token = req.headers.authorization.split(" ")[1];
     }
 
-	//* 2) check if the token exists
+    //* 2) check if the token exists
     if (!token) {
         return next(
             new AppError(
@@ -34,14 +34,14 @@ exports.protect = catchAsync(async (req, res, next) => {
     //* 3) verify token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-	//* 4) check if the user still exists
+    //* 4) check if the user still exists
     const currentUser = await User.findById(decoded.id);
 
     if (!currentUser) {
         return next(new AppError("User with the ID is not exist!", 404));
     }
 
-	//* 5) check if user changed password after the token is issued
+    //* 5) check if user changed password after the token is issued
     if (currentUser.changePasswordAfter(decoded.iat)) {
         return next(
             new AppError(
@@ -51,15 +51,26 @@ exports.protect = catchAsync(async (req, res, next) => {
         );
     }
 
-	//* 5) grant access to protected route
-	req.user = currentUser;
+    //* 5) grant access to protected route
+    req.user = currentUser;
     next();
 });
+
+//* to protect route by checking user roles to perfom certain action
+exports.restrictTo = (...roles) => {
+	return (req, res, next) => {
+		if (!roles.includes(req.user.role)) {
+			new AppError("You do not have permission to perform this action", 403);
+		}
+		next();
+	}
+}
 
 exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create({
         name: req.body.name,
         email: req.body.email,
+        role: req.body.role,
         password: req.body.password,
         confirmPassword: req.body.confirmPassword,
     });

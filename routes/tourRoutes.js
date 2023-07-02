@@ -9,13 +9,9 @@ router
     .route("/top5cheap")
     .get(tourController.top5Cheaps, tourController.getAllTours);
 
-router
-	.route("/tour-stats")
-	.get(tourController.getTourStats);
+router.route("/tour-stats").get(tourController.getTourStats);
 
-router
-	.route("/monthly-plan/:year")
-	.get(tourController.getMonthlyPlan);
+router.route("/monthly-plan/:year").get(tourController.getMonthlyPlan);
 
 router
     .route("/")
@@ -25,6 +21,10 @@ router
     .route("/:id")
     .get(tourController.getTour)
     .patch(tourController.editTour)
-    .delete(tourController.deleteTour);
+    .delete(
+        authController.protect,
+        authController.restrictTo("admin", "lead-guide"),
+        tourController.deleteTour
+    );
 
 module.exports = router;
