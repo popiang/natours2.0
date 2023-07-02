@@ -9,6 +9,22 @@ const signToken = (id) => {
     });
 };
 
+exports.protect = catchAsync(async (req, res, next) => {
+
+	let token = '';
+	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+		token = req.headers.authorization.split(' ')[1];
+	}
+
+	console.log('token: ' + token);
+
+	if (!token) {
+		return next(new AppError("You are not logged in. Please login to get access.", 401));
+	}
+
+	next();
+});
+
 exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create({
         name: req.body.name,
@@ -21,7 +37,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
         status: "success",
-		test: "hello",
+        test: "hello",
         token,
         data: {
             user: newUser,
@@ -31,8 +47,6 @@ exports.signup = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
     // 1) get the email and password from user
-    // const email = req.body.email;
-    // const password = req.body.password;
     const { email, password } = req.body;
 
     // 2) check if email and password are sent
