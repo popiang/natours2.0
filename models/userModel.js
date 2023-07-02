@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -32,7 +33,24 @@ const userSchema = new mongoose.Schema({
         required: [true, "A confirm password is compulsory"],
         trim: true,
         minlength: [8, "Password length must be at least 8 characters"],
+        validate: {
+            validator: function (val) {
+                return val === this.password;
+            },
+            message: `Passwords don't match`,
+        },
     },
+});
+
+//* document middleware
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
+
+    this.password = await bcrypt.hash(this.password, 12);
+
+    this.confirmPassword = undefined;
+
+    next();
 });
 
 const User = mongoose.model("User", userSchema);
