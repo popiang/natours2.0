@@ -51,7 +51,7 @@ exports.protect = catchAsync(async (req, res, next) => {
         );
     }
 
-    //* 5) grant access to protected route
+    //* 6) grant access to protected route
     req.user = currentUser;
     next();
 });
@@ -60,7 +60,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.restrictTo = (...roles) => {
 	return (req, res, next) => {
 		if (!roles.includes(req.user.role)) {
-			new AppError("You do not have permission to perform this action", 403);
+			return new AppError("You do not have permission to perform this action", 403);
 		}
 		next();
 	}
