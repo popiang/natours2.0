@@ -58,13 +58,21 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 //* to protect route by checking user roles to perfom certain action
 exports.restrictTo = (...roles) => {
-	return (req, res, next) => {
-		if (!roles.includes(req.user.role)) {
-			return new AppError("You do not have permission to perform this action", 403);
-		}
-		next();
-	}
-}
+    return (req, res, next) => {
+        console.log(req.user.role);
+        console.log(roles);
+        if (!roles.includes(req.user.role)) {
+            console.log("masuk!!");
+            return next(
+                new AppError(
+                    "You do not have permission to perform this action",
+                    403
+                )
+            );
+        }
+        next();
+    };
+};
 
 exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create({
