@@ -120,3 +120,26 @@ exports.login = catchAsync(async (req, res, next) => {
         token,
     });
 });
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+
+	//* 1) get user email from request body
+    const user = User.findOne({ email: req.body.email });
+
+	//* 2) validate if user exist
+    if (!user) {
+        return next(
+            new AppError("There is no user with the email address!", 404)
+        );
+    }
+
+	//* 3) get reset token
+    const resetToken = user.createPasswordResetToken();
+
+	//* 4) save encrypted reset password token in db
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+        status: "success",
+    });
+});
