@@ -179,14 +179,12 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 exports.resetPassword = catchAsync(async (req, res, next) => {
 	//* 1) get token from parameter
     const resetToken = req.params.token;
-    console.log(resetToken);
 
 	//* 2) encrypt the token
     const hashedToken = crypto
         .createHash("sha256")
         .update(resetToken)
         .digest("hex");
-    console.log(hashedToken);
 
 	//* 3) find user using the encrypted token
     const user = await User.findOne({
@@ -207,6 +205,30 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 	await user.save();
 
 	//* log the user in, send JWT
+	const token = signToken(user._id);
+
+	res.status(200).json({
+		status: "success",
+		token
+	});
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+	//* 1) find the logged in user
+	const user = await User.findById(req.user._id);
+
+	//* 2) validate the user
+	if (!user) {
+		return next(new AppError("User is not exist in the system!", 400));
+	}
+
+	//* 3) update the user info with the new password
+	user.password = req.body.password;
+	user.confirmPassword = req.body.confirmPassword;
+	user.passwordChangeAt = Date.now();
+	await user.save();
+
+	//* 4) log user in, send JWT token
 	const token = signToken(user._id);
 
 	res.status(200).json({
