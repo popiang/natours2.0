@@ -5,6 +5,8 @@ const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
@@ -29,6 +31,12 @@ app.use("/api", limiter);
 
 // helmet
 app.use(helmet());
+
+// data sanitization againts NoSQL query injection
+app.use(mongoSanitize());
+
+// data sanitization againts XSS
+app.use(xss());
 
 // to modify the incoming req data and add into req object
 app.use(bodyParser.json());
