@@ -38,6 +38,20 @@ app.use(mongoSanitize());
 // data sanitization againts XSS
 app.use(xss());
 
+// prevent parameter pollution
+app.use(
+    hpp({
+        whitelist: [
+            "duration",
+            "ratingsQuantity",
+            "ratingsAverage",
+            "maxGroupSize",
+            "difficulty",
+            "price",
+        ],
+    })
+);
+
 // to modify the incoming req data and add into req object
 app.use(bodyParser.json());
 
