@@ -12,6 +12,33 @@ const signToken = (id) => {
     });
 };
 
+const createSendToken = (user, statusCode, res) => {
+    const token = signToken(user._id);
+
+    const cookieOptions = {
+        expires: new Date(
+            Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+        ),
+        httpOnly: true,
+    };
+
+    if (process.env.NODE_ENV === "production") {
+        cookieOptions.secure = true;
+    }
+
+    res.cookie("jwt", token, cookieOptions);
+
+    user.password = undefined;
+
+    res.status(statusCode).json({
+        status: "success",
+        token,
+        data: {
+            user: user,
+        },
+    });
+};
+
 //* to protect route by checking token and user
 exports.protect = catchAsync(async (req, res, next) => {
     //* 1) get the token
@@ -61,10 +88,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 //* to protect route by checking user roles to perfom certain action
 exports.restrictTo = (...roles) => {
     return (req, res, next) => {
-        console.log(req.user.role);
-        console.log(roles);
         if (!roles.includes(req.user.role)) {
-            console.log("masuk!!");
             return next(
                 new AppError(
                     "You do not have permission to perform this action",
@@ -85,16 +109,18 @@ exports.signup = catchAsync(async (req, res, next) => {
         confirmPassword: req.body.confirmPassword,
     });
 
-    const token = signToken(newUser._id);
+	createSendToken(newUser, 201, res);
 
-    res.status(200).json({
-        status: "success",
-        test: "hello",
-        token,
-        data: {
-            user: newUser,
-        },
-    });
+    // const token = signToken(newUser._id);
+
+    // res.status(200).json({
+    //     status: "success",
+    //     test: "hello",
+    //     token,
+    //     data: {
+    //         user: newUser,
+    //     },
+    // });
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -115,12 +141,14 @@ exports.login = catchAsync(async (req, res, next) => {
     }
 
     // 5) if everything is ok, send token to client
-    const token = signToken(user._id);
+	createSendToken(user, 200, res);
 
-    res.status(200).json({
-        status: "success",
-        token,
-    });
+    // const token = signToken(user._id);
+
+    // res.status(200).json({
+    //     status: "success",
+    //     token,
+    // });
 });
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
@@ -177,62 +205,64 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-	//* 1) get token from parameter
+    //* 1) get token from parameter
     const resetToken = req.params.token;
 
-	//* 2) encrypt the token
+    //* 2) encrypt the token
     const hashedToken = crypto
         .createHash("sha256")
         .update(resetToken)
         .digest("hex");
 
-	//* 3) find user using the encrypted token
+    //* 3) find user using the encrypted token
     const user = await User.findOne({
         passwordResetToken: hashedToken,
         passwordResetExpires: { $gt: Date.now() },
     });
 
-	//* 4) throw error if no user's found
+    //* 4) throw error if no user's found
     if (!user) {
         return next(new AppError("Token is invalid or has expired!!", 400));
     }
 
-	//* 5) update user's data
-	user.password = req.body.password;
-	user.confirmPassword = req.body.confirmPassword;
-	user.passwordResetToken = undefined;
-	user.passwordResetExpires = undefined;
-	await user.save();
+    //* 5) update user's data
+    user.password = req.body.password;
+    user.confirmPassword = req.body.confirmPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
 
-	//* log the user in, send JWT
-	const token = signToken(user._id);
+    //* log the user in, send JWT
+	createSendToken(user, 200, res);
+    // const token = signToken(user._id);
 
-	res.status(200).json({
-		status: "success",
-		token
-	});
+    // res.status(200).json({
+    //     status: "success",
+    //     token,
+    // });
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
-	//* 1) find the logged in user
-	const user = await User.findById(req.user._id);
+    //* 1) find the logged in user
+    const user = await User.findById(req.user._id);
 
-	//* 2) validate the user
-	if (!user) {
-		return next(new AppError("User is not exist in the system!", 400));
-	}
+    //* 2) validate the user
+    if (!user) {
+        return next(new AppError("User is not exist in the system!", 400));
+    }
 
-	//* 3) update the user info with the new password
-	user.password = req.body.password;
-	user.confirmPassword = req.body.confirmPassword;
-	user.passwordChangeAt = Date.now();
-	await user.save();
+    //* 3) update the user info with the new password
+    user.password = req.body.password;
+    user.confirmPassword = req.body.confirmPassword;
+    user.passwordChangeAt = Date.now();
+    await user.save();
 
-	//* 4) log user in, send JWT token
-	const token = signToken(user._id);
+    //* 4) log user in, send JWT token
+	createSendToken(user, 200, res);
+    // const token = signToken(user._id);
 
-	res.status(200).json({
-		status: "success",
-		token
-	});
+    // res.status(200).json({
+    //     status: "success",
+    //     token,
+    // });
 });
