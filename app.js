@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
@@ -25,6 +26,9 @@ const limiter = rateLimit({
 });
 
 app.use("/api", limiter);
+
+// helmet
+app.use(helmet());
 
 // to modify the incoming req data and add into req object
 app.use(bodyParser.json());
