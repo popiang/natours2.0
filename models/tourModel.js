@@ -9,7 +9,10 @@ const tourSchema = new mongoose.Schema(
             required: [true, "A tour must have a name"],
             unique: true,
             trim: true,
-			maxlength: [40, 'A tour name mush have less or equal then 40 characters']
+            maxlength: [
+                40,
+                "A tour name mush have less or equal then 40 characters",
+            ],
         },
         duration: {
             type: Number,
@@ -22,16 +25,16 @@ const tourSchema = new mongoose.Schema(
         difficulty: {
             type: String,
             required: [true, "A tour must have a difficulty"],
-			enum: {
-				values: ['easy', 'medium', 'difficult'],
-				message: 'Difficulty has to be easy, medium or difficult'
-			}
+            enum: {
+                values: ["easy", "medium", "difficult"],
+                message: "Difficulty has to be easy, medium or difficult",
+            },
         },
         ratingsAverage: {
             type: Number,
             default: 4.5,
-			min: [1, 'Rating must be between 1 to 5'],
-			max: [5, 'Rating must be between 1 to 5']
+            min: [1, "Rating must be between 1 to 5"],
+            max: [5, "Rating must be between 1 to 5"],
         },
         ratingsQuantity: {
             type: Number,
@@ -42,14 +45,15 @@ const tourSchema = new mongoose.Schema(
             required: [true, "A tour must have a price"],
         },
         priceDiscount: {
-			type: Number,
-			validate: {
-				validator: function(val) {
-					return val < this.price
-				},
-				message: 'Discount price ({VALUE}) should be lower the regular price'
-			}
-		},
+            type: Number,
+            validate: {
+                validator: function (val) {
+                    return val < this.price;
+                },
+                message:
+                    "Discount price ({VALUE}) should be lower the regular price",
+            },
+        },
         summary: {
             type: String,
             trim: true,
@@ -63,7 +67,7 @@ const tourSchema = new mongoose.Schema(
         createdAt: {
             type: Date,
             default: Date.now(),
-			select: false
+            select: false,
         },
         startDates: [Date],
         secretTour: {
@@ -71,31 +75,36 @@ const tourSchema = new mongoose.Schema(
             default: false,
             select: false,
         },
-		startLocation: {
-			// GetJSON
-			type: {
-				type: String,
-				default: "Point",
-				enum: ['Point']
-			},
-			coordinate: [Number],
-			address: String,
-			description: String
-		},
-		locations: [
-			{
-				type: {
-					type: String,
-					default: "Point",
-					enum: ["Point"]
-				},
-				coordinates: [Number],
-				address: String,
-				description: String,
-				day: Number
-			}
-		],
-		guides: Array
+        startLocation: {
+            // GetJSON
+            type: {
+                type: String,
+                default: "Point",
+                enum: ["Point"],
+            },
+            coordinate: [Number],
+            address: String,
+            description: String,
+        },
+        locations: [
+            {
+                type: {
+                    type: String,
+                    default: "Point",
+                    enum: ["Point"],
+                },
+                coordinates: [Number],
+                address: String,
+                description: String,
+                day: Number,
+            },
+        ],
+        guides: [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: "User",
+            },
+        ],
     },
     {
         toJSON: { virtuals: true },
@@ -118,11 +127,11 @@ tourSchema.virtual("durationWeeks").get(function () {
 // 	next();
 // });
 
-tourSchema.pre('save', async function(next) {
-	const guidesPromises = this.guides.map(async id => await User.findById(id));
-	this.guides = await Promise.all(guidesPromises);
-	next();
-});
+// tourSchema.pre('save', async function(next) {
+// 	const guidesPromises = this.guides.map(async id => await User.findById(id));
+// 	this.guides = await Promise.all(guidesPromises);
+// 	next();
+// });
 
 //* query middleware
 tourSchema.pre(/^find/, function (next) {
