@@ -25,12 +25,20 @@ exports.getAllUsers = catchAsync(async (req, res) => {
     });
 });
 
-exports.getUser = (req, res) => {
-    res.status(500).json({
-        status: "error",
-        message: "This path is not defined yet",
+exports.getUser = catchAsync(async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+        return next(new AppError("User with this ID is not exist!", 400));
+    }
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            user: user,
+        },
     });
-};
+});
 
 exports.createUser = (req, res) => {
     res.status(500).json({
