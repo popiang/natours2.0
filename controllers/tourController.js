@@ -1,6 +1,6 @@
 const Tour = require("../models/tourModel");
-const APIFeatures = require("../utils/apiFeatures");
-const AppError = require("../utils/appError");
+// const APIFeatures = require("../utils/apiFeatures");
+// const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const factory = require("../controllers/handlerFactory");
 
@@ -23,39 +23,43 @@ exports.top5Cheaps = (req, res, next) => {
     next();
 };
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
-    const features = new APIFeatures(Tour.find(), req.query)
-        .filter()
-        .sort()
-        .limitFields()
-        .paginate();
+// exports.getAllTours = catchAsync(async (req, res, next) => {
+//     const features = new APIFeatures(Tour.find(), req.query)
+//         .filter()
+//         .sort()
+//         .limitFields()
+//         .paginate();
 
-    //* execute query
-    const tours = await features.query;
+//     //* execute query
+//     const tours = await features.query;
 
-    res.status(200).json({
-        status: "success",
-        requestedAt: req.requestTime,
-        data: {
-            tours: tours,
-        },
-    });
-});
+//     res.status(200).json({
+//         status: "success",
+//         requestedAt: req.requestTime,
+//         data: {
+//             tours: tours,
+//         },
+//     });
+// });
 
-exports.getTour = catchAsync(async (req, res, next) => {
-    const tour = await Tour.findById(req.params.id).populate("reviews");
+exports.getAllTours = factory.getAll(Tour);
 
-    if (!tour) {
-        return next(new AppError("Tour ID is not found", 404));
-    }
+// exports.getTour = catchAsync(async (req, res, next) => {
+//     const tour = await Tour.findById(req.params.id).populate("reviews");
 
-    res.status(200).json({
-        status: "success",
-        data: {
-            tour: tour,
-        },
-    });
-});
+//     if (!tour) {
+//         return next(new AppError("Tour ID is not found", 404));
+//     }
+
+//     res.status(200).json({
+//         status: "success",
+//         data: {
+//             tour: tour,
+//         },
+//     });
+// });
+
+exports.getTour = factory.getOne(Tour, { path: "reviews" });
 
 // exports.createTour = catchAsync(async (req, res, next) => {
 //     const newTour = await Tour.create(req.body);

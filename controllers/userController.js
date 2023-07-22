@@ -14,32 +14,36 @@ const filterObj = (obj, ...allowedFields) => {
     return newObj;
 };
 
-exports.getAllUsers = catchAsync(async (req, res) => {
-    const users = await User.find();
+// exports.getAllUsers = catchAsync(async (req, res) => {
+//     const users = await User.find();
 
-    res.status(200).json({
-        status: "success",
-        data: {
-            results: users.length,
-            users: users,
-        },
-    });
-});
+//     res.status(200).json({
+//         status: "success",
+//         data: {
+//             results: users.length,
+//             users: users,
+//         },
+//     });
+// });
 
-exports.getUser = catchAsync(async (req, res) => {
-    const user = await User.findById(req.params.id);
+exports.getAllUsers = factory.getAll(User);
 
-    if (!user) {
-        return next(new AppError("User with this ID is not exist!", 400));
-    }
+// exports.getUser = catchAsync(async (req, res) => {
+//     const user = await User.findById(req.params.id);
 
-    res.status(200).json({
-        status: "success",
-        data: {
-            user: user,
-        },
-    });
-});
+//     if (!user) {
+//         return next(new AppError("User with this ID is not exist!", 400));
+//     }
+
+//     res.status(200).json({
+//         status: "success",
+//         data: {
+//             user: user,
+//         },
+//     });
+// });
+
+exports.getUser = factory.getOne(User);
 
 exports.createUser = (req, res) => {
     res.status(500).json({
