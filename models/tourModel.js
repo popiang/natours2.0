@@ -112,14 +112,16 @@ const tourSchema = new mongoose.Schema(
     }
 );
 
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+
 tourSchema.virtual("durationWeeks").get(function () {
     return this.duration / 7;
 });
 
 tourSchema.virtual("reviews", {
-	ref: "Review",
-	foreignField: "tour",
-	localField: "_id"
+    ref: "Review",
+    foreignField: "tour",
+    localField: "_id",
 });
 
 //* document middleware
