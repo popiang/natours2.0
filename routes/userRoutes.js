@@ -19,14 +19,14 @@ router.get("/me", userController.getMe, userController.getUser);
 //* only admin allowed for below routes
 router.use(authController.restrictTo("admin")); 
 
-router
-    .route("/")
-    .get(userController.getAllUsers)
-    .post(userController.createUser);
+// router
+//     .route("/")
+//     .get(userController.getAllUsers)
+//     .post(userController.createUser);
 router
     .route("/:id")
     .get(userController.getUser)
-    .patch(userController.editUser)
+    .patch(userController.updateUser)
     .delete(userController.deleteUser);
 
 module.exports = router;
