@@ -42,6 +42,17 @@ reviewSchema.pre(/^find/, function (next) {
     next();
 });
 
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+    this.r = await this.clone().findOne();
+    console.log(this.r);
+    next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function (next) {
+    await this.r.constructor.calcAverageRatings(this.r.tour);
+    // next();
+});
+
 reviewSchema.statics.calcAverageRatings = async function (tourId) {
     const stats = await this.aggregate([
         {
@@ -58,10 +69,17 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
 
     console.log(stats);
 
-    await Tour.findByIdAndUpdate(tourId, {
-        ratingsQuantity: stats[0].nRating,
-        ratingsAverage: stats[0].avgRating,
-    });
+    if (stats.length > 0) {
+        await Tour.findByIdAndUpdate(tourId, {
+            ratingsQuantity: stats[0].nRating,
+            ratingsAverage: stats[0].avgRating,
+        });
+    } else {
+        await Tour.findByIdAndUpdate(tourId, {
+            ratingsQuantity: 0,
+            ratingsAverage: 4.5,
+        });
+    }
 };
 
 reviewSchema.post("save", function () {

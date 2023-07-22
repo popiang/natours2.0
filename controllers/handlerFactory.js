@@ -18,6 +18,10 @@ exports.deleteOne = (Model) =>
 
 exports.updateOne = (Model) =>
     catchAsync(async (req, res, next) => {
+		console.log("masuk update one");
+		console.log(req.params.id);
+		console.log(req.body);
+		console.log(Model);
         const updatedDoc = await Model.findByIdAndUpdate(
             req.params.id,
             req.body,
@@ -26,10 +30,11 @@ exports.updateOne = (Model) =>
                 runValidators: true,
             }
         );
-
+		console.log("updatedDoc: " + updatedDoc);
         if (!updatedDoc) {
             return next(new AppError("Document with the ID is not found", 404));
         }
+		console.log("hello!!");
 
         res.status(200).json({
             status: "success",
