@@ -109,46 +109,28 @@ exports.signup = catchAsync(async (req, res, next) => {
         confirmPassword: req.body.confirmPassword,
     });
 
-	createSendToken(newUser, 201, res);
-
-    // const token = signToken(newUser._id);
-
-    // res.status(200).json({
-    //     status: "success",
-    //     test: "hello",
-    //     token,
-    //     data: {
-    //         user: newUser,
-    //     },
-    // });
+    createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
-    // 1) get the email and password from user
+    //* 1) get the email and password from user
     const { email, password } = req.body;
 
-    // 2) check if email and password are sent
+    //* 2) check if email and password are sent
     if (!email || !password) {
         return next(new AppError("Missing email or password!!", 400));
     }
 
-    // 3) check if user with the email is exist
+    //* 3) check if user with the email is exist
     const user = await User.findOne({ email: email }).select("+password");
 
-    // 4) check if password is the same with the one in db
+    //* 4) check if password is the same with the one in db
     if (!user || !(await user.correctPassword(password, user.password))) {
         return next(new AppError("Incorrect email or password!!", 401));
     }
 
-    // 5) if everything is ok, send token to client
-	createSendToken(user, 200, res);
-
-    // const token = signToken(user._id);
-
-    // res.status(200).json({
-    //     status: "success",
-    //     token,
-    // });
+    //* 5) if everything is ok, send token to client
+    createSendToken(user, 200, res);
 });
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
@@ -233,13 +215,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     await user.save();
 
     //* log the user in, send JWT
-	createSendToken(user, 200, res);
-    // const token = signToken(user._id);
-
-    // res.status(200).json({
-    //     status: "success",
-    //     token,
-    // });
+    createSendToken(user, 200, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -258,11 +234,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     await user.save();
 
     //* 4) log user in, send JWT token
-	createSendToken(user, 200, res);
-    // const token = signToken(user._id);
-
-    // res.status(200).json({
-    //     status: "success",
-    //     token,
-    // });
+    createSendToken(user, 200, res);
 });

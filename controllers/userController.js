@@ -14,57 +14,10 @@ const filterObj = (obj, ...allowedFields) => {
     return newObj;
 };
 
-// exports.getAllUsers = catchAsync(async (req, res) => {
-//     const users = await User.find();
-
-//     res.status(200).json({
-//         status: "success",
-//         data: {
-//             results: users.length,
-//             users: users,
-//         },
-//     });
-// });
-
 exports.getAllUsers = factory.getAll(User);
-
-// exports.getUser = catchAsync(async (req, res) => {
-//     const user = await User.findById(req.params.id);
-
-//     if (!user) {
-//         return next(new AppError("User with this ID is not exist!", 400));
-//     }
-
-//     res.status(200).json({
-//         status: "success",
-//         data: {
-//             user: user,
-//         },
-//     });
-// });
-
 exports.getUser = factory.getOne(User);
-
-exports.createUser = (req, res) => {
-    res.status(500).json({
-        status: "error",
-        message: "This path is not defined yet",
-    });
-};
-
-exports.editUser = (req, res) => {
-    res.status(500).json({
-        status: "error",
-        message: "This path is not defined yet",
-    });
-};
-
-exports.deleteUser = (req, res) => {
-    res.status(500).json({
-        status: "error",
-        message: "This path is not defined yet",
-    });
-};
+exports.deleteUser = factory.deleteOne(User);
+exports.updateUser = factory.updateOne(User);
 
 exports.updateMe = catchAsync(async (req, res, next) => {
     //* 1) check if there are password and confirmPassword in the req.body
@@ -107,8 +60,6 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.deleteUser = factory.deleteOne(User);
-exports.updateUser = factory.updateOne(User);
 
 exports.getMe = (req, res, next) => {
     req.params.id = req.user.id;

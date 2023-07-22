@@ -5,17 +5,19 @@ const router = express.Router();
 
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
-
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);
-router.patch(
-    "/updatePassword",
-    authController.protect,
-    authController.updatePassword
-);
-router.patch("/updateMe", authController.protect, userController.updateMe);
-router.patch("/deleteMe", authController.protect, userController.deleteMe);
-router.get("/me", authController.protect, userController.getMe, userController.getUser);
+
+//* must be logged in for all below routes
+router.use(authController.protect); 
+
+router.patch("/updatePassword", authController.updatePassword);
+router.patch("/updateMe", userController.updateMe);
+router.patch("/deleteMe", userController.deleteMe);
+router.get("/me", userController.getMe, userController.getUser);
+
+//* only admin allowed for below routes
+router.use(authController.restrictTo("admin")); 
 
 router
     .route("/")
