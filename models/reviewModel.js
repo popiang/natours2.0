@@ -33,6 +33,8 @@ const reviewSchema = new mongoose.Schema(
     }
 );
 
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre(/^find/, function (next) {
     this.populate({
         path: "user",
@@ -49,6 +51,7 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
 });
 
 reviewSchema.post(/^findOneAnd/, async function (next) {
+    console.log(this.r);
     await this.r.constructor.calcAverageRatings(this.r.tour);
     // next();
 });
